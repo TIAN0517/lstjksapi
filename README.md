@@ -272,31 +272,8 @@ POST /api/check                   # 过滤检查
 | **deploy-complete.bat** | 一键部署 |
 | **check-system.bat** | 系统诊断 |
 
-### 常用命令
 
-```powershell
-# 查看服务状态
-docker-compose ps
 
-# 查看日志
-docker-compose logs -f
-docker-compose logs -f fastapi
-
-# 重启服务
-docker-compose restart
-docker-compose restart fastapi
-
-# 停止所有服务
-docker-compose down
-
-# 数据库连接
-docker exec -it bossjy-postgres psql -U jytian -d bossjy_huaqiao
-
-# Redis连接
-docker exec -it bossjy-redis redis-cli -a ji394su3!!
-```
-
----
 
 ## 🎯 适用场景
 
@@ -407,17 +384,7 @@ gunzip -c backup_20251009.sql.gz | docker exec -i bossjy-postgres psql -U jytian
 
 ## 🔧 故障排除
 
-### Docker相关问题
 
-**问题：容器无法启动，出现overlay filesystem错误**
-```
-解决方案：
-1. 右键任务栏Docker图标 → Quit Docker Desktop
-2. 等待10秒确保完全退出
-3. 重新打开Docker Desktop
-4. 等待鲸鱼图标稳定（30-60秒）
-5. 运行：docker version 验证
-```
 
 详细说明：[DOCKER_OVERLAY_ISSUE.md](./DOCKER_OVERLAY_ISSUE.md)
 
@@ -425,20 +392,7 @@ gunzip -c backup_20251009.sql.gz | docker exec -i bossjy-postgres psql -U jytian
 
 **数据库连接失败：**
 ```bash
-# 检查PostgreSQL是否就绪
-docker exec bossjy-postgres pg_isready -U jytian
 
-# 查看数据库日志
-docker-compose logs postgres
-```
-
-**Redis连接失败：**
-```bash
-# 测试Redis连接
-docker exec -it bossjy-redis redis-cli -a ji394su3!! PING
-
-# 应该返回：PONG
-```
 
 **端口被占用：**
 ```bash
@@ -460,12 +414,7 @@ ORDER BY mean_time DESC
 LIMIT 10;
 ```
 
-**Redis内存使用：**
-```bash
-# 查看Redis统计
-docker exec bossjy-redis redis-cli -a ji394su3!! INFO memory
-docker exec bossjy-redis redis-cli -a ji394su3!! INFO stats
-```
+
 
 更多故障排除：[NEXT_STEPS.md](./NEXT_STEPS.md)
 
@@ -497,10 +446,7 @@ docker exec bossjy-redis redis-cli -a ji394su3!! INFO stats
 
 ## 💡 最佳实践建议
 
-### 开发环境
-- 使用 `docker-compose logs -f` 实时查看日志
-- 修改代码后使用 `docker-compose restart [service]` 重启单个服务
-- 定期清理未使用的Docker资源：`docker system prune`
+
 
 ### 测试环境
 - 使用独立的测试数据库
@@ -553,9 +499,8 @@ docker exec bossjy-redis redis-cli -a ji394su3!! INFO stats
 
 ### 立即可做（当前状态）
 1. ✅ 阅读文档，了解系统状态
-2. ⏳ 重启Docker Desktop
-3. ⏳ 运行AUTO_START.bat启动服务
-4. ⏳ 验证系统功能
+2. ⏳ 运行AUTO_START.bat启动服务
+3. ⏳ 验证系统功能
 
 ### 短期优化（1-2周）
 - 清理Alembic，统一数据库初始化
@@ -577,7 +522,4 @@ docker exec bossjy-redis redis-cli -a ji394su3!! INFO stats
 
 ---
 
-**BossJy系统** - 诚实、透明、实用的数据处理平台#   l s t j k s a p i  
- #   l s t j k s a p i  
- #   l s t j k s a p i  
- 
+**BossJy系统** - 诚实、透明、实用的数据处理平台
