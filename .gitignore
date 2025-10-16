@@ -1,0 +1,15 @@
+﻿# secrets
+.env
+.env.*
+credentials/
+*.pem
+*.p12
+*.key
+*.crt
+*.cer
+*.der
+*.jks
+*.keystore
+*.pfx
+*.asc
+*.gpg
