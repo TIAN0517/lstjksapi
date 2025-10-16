@@ -1,0 +1,121 @@
+# Prometheus配置文件
+global:
+  scrape_interval: 15s  # 每15秒采集一次指标
+  evaluation_interval: 15s  # 每15秒评估一次规则
+  external_labels:
+    cluster: 'bossjy-production'
+    environment: 'production'
+
+# 告警规则文件
+rule_files:
+  - 'alerts/*.yml'
+
+# 告警管理器配置
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+
+# 采集目标配置
+scrape_configs:
+  # Prometheus自身监控
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          service: 'prometheus'
+
+  # FastAPI服务监控
+  - job_name: 'fastapi'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['fastapi:8000']
+        labels:
+          service: 'fastapi'
+          instance: 'fastapi-1'
+
+  # Go API服务监控
+  - job_name: 'go-api'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['go-api:8080']
+        labels:
+          service: 'go-api'
+          instance: 'go-api-1'
+
+  # Chat服务监控
+  - job_name: 'chat'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['chat:9002']
+        labels:
+          service: 'chat'
+          instance: 'chat-1'
+
+  # JYT服务监控
+  - job_name: 'jyt'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['jyt:9003']
+        labels:
+          service: 'jyt'
+          instance: 'jyt-1'
+
+  # Admin服务监控
+  - job_name: 'admin'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['admin:9888']
+        labels:
+          service: 'admin'
+          instance: 'admin-1'
+
+  # PostgreSQL Exporter
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+        labels:
+          service: 'postgres'
+          database: 'bossjy'
+
+  # Redis Exporter
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+        labels:
+          service: 'redis'
+
+  # Nginx Exporter
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx-exporter:9113']
+        labels:
+          service: 'nginx'
+
+  # Node Exporter (系统指标)
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          service: 'node'
+          instance: 'host'
+
+  # cAdvisor (容器指标)
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+        labels:
+          service: 'cadvisor'
+
+# 远程存储配置（可选）
+# remote_write:
+#   - url: "http://remote-storage:9090/api/v1/write"
+#     queue_config:
+#       capacity: 10000
+#       max_shards: 50
+#       min_shards: 1
+
+# 远程读取配置（可选）
+# remote_read:
+#   - url: "http://remote-storage:9090/api/v1/read"

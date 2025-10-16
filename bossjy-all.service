@@ -1,0 +1,36 @@
+[Unit]
+Description=BossJy-Pro 全功能守护进程
+Documentation=https://github.com/lstjks/Jybot
+After=network.target docker.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/mnt/d/BossJy-Cn/BossJy-Cn
+Environment="PYTHONPATH=/mnt/d/BossJy-Cn/BossJy-Cn"
+Environment="PATH=/mnt/d/BossJy-Cn/BossJy-Cn/venv/bin:/usr/local/bin:/usr/bin:/bin"
+
+# 主进程
+ExecStart=/usr/bin/python3 /mnt/d/BossJy-Cn/BossJy-Cn/bossjy_daemon.py
+
+# 重启配置
+Restart=always
+RestartSec=10
+StartLimitInterval=300
+StartLimitBurst=5
+
+# 日志配置
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=bossjy-daemon
+
+# 安全配置
+NoNewPrivileges=false
+PrivateTmp=false
+
+# 资源限制
+LimitNOFILE=65535
+LimitNPROC=4096
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,36 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'bossjy-production'
+    environment: 'production'
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+rule_files: []
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'fastapi'
+    static_configs:
+      - targets: ['bossjy-fastapi:8000']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  - job_name: 'go-api'
+    static_configs:
+      - targets: ['bossjy-go-api:8080']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  - job_name: 'bots'
+    static_configs:
+      - targets: ['bossjy-bots:9001']
+    metrics_path: '/metrics'
+    scrape_interval: 30s

@@ -1,0 +1,121 @@
+### 智能过滤系统 API 测试脚本
+### 使用方法: 在 VS Code 中安装 REST Client 插件，或者使用 HTTPie/Postman
+
+@baseUrl = http://localhost:8080/api/v1
+@token = Bearer YOUR_TOKEN_HERE
+
+### 健康检查
+GET {{baseUrl}}/../health
+
+### 用户注册
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "password123",
+  "email": "test@example.com"
+}
+
+### 用户登录
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+### 刷新Token (替换YOUR_TOKEN_HERE为实际的token)
+POST {{baseUrl}}/auth/refresh
+Authorization: {{token}}
+
+### 过滤器测试 - 测试手机号
+POST {{baseUrl}}/filter/check
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "phone": "13800138000",
+  "ip": "",
+  "email": ""
+}
+
+### 过滤器测试 - 测试IP地址
+POST {{baseUrl}}/filter/check
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "phone": "",
+  "ip": "192.168.1.100",
+  "email": ""
+}
+
+### 过滤器测试 - 测试邮箱
+POST {{baseUrl}}/filter/check
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "phone": "",
+  "ip": "",
+  "email": "spam@example.com"
+}
+
+### 获取黑名单列表
+GET {{baseUrl}}/filter/blacklist?page=1&page_size=10
+Authorization: {{token}}
+
+### 添加黑名单项
+POST {{baseUrl}}/filter/blacklist
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "type": "phone",
+  "value": "13900139000",
+  "reason": "测试添加黑名单"
+}
+
+### 删除黑名单项 (替换ID为实际ID)
+DELETE {{baseUrl}}/filter/blacklist/1
+Authorization: {{token}}
+
+### 获取白名单列表
+GET {{baseUrl}}/filter/whitelist?page=1&page_size=10
+Authorization: {{token}}
+
+### 添加白名单项
+POST {{baseUrl}}/filter/whitelist
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "type": "ip",
+  "value": "192.168.1.1",
+  "reason": "可信IP地址"
+}
+
+### 删除白名单项 (替换ID为实际ID)
+DELETE {{baseUrl}}/filter/whitelist/1
+Authorization: {{token}}
+
+### 获取统计数据
+GET {{baseUrl}}/admin/stats
+Authorization: {{token}}
+
+### 获取过滤统计
+GET {{baseUrl}}/admin/stats/filter?start_date=2023-01-01&end_date=2023-12-31
+Authorization: {{token}}
+
+### 导出数据
+POST {{baseUrl}}/admin/stats/export
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "start_date": "2023-01-01",
+  "end_date": "2023-12-31",
+  "type": "filter_logs"
+}

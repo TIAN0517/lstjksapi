@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+  # 前端服务
+  frontend:
+    build:
+      context: ./services/vue-frontend
+      dockerfile: Dockerfile
+    container_name: bossjy-frontend
+    ports:
+      - "3000:80"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - backend
+    networks:
+      - bossjy-network
+    restart: unless-stopped
+
+  # 后端API服务
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bossjy-backend
+    ports:
+      - "18001:8000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://jytian:ji394su3@postgres:15432/bossjy_huaqiao
+      - REDIS_URL=redis://redis:16379
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - bossjy-network
+    restart: unless-stopped
+
+  # PostgreSQL数据库
+  postgres:
+    image: postgres:15-alpine
+    container_name: bossjy-postgres
+    ports:
+      - "15432:5432"
+    environment:
+      - POSTGRES_DB=bossjy_huaqiao
+      - POSTGRES_USER=jytian
+      - POSTGRES_PASSWORD=ji394su3
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./data/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - bossjy-network
+    restart: unless-stopped
+
+  # Redis缓存
+  redis:
+    image: redis:7-alpine
+    container_name: bossjy-redis
+    ports:
+      - "16379:6379"
+    command: redis-server --requirepass ji394su3!!
+    volumes:
+      - redis_data:/data
+    networks:
+      - bossjy-network
+    restart: unless-stopped
+
+  # Nginx反向代理
+  nginx:
+    image: nginx:alpine
+    container_name: bossjy-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - bossjy-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  bossjy-network:
+    driver: bridge

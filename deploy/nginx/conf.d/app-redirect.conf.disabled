@@ -1,0 +1,8 @@
+# app.tiankai.it.com重定向到bossjy.tiankai.it.com - HTTP版本
+server {
+    listen 80;
+    server_name app.tiankai.it.com;
+    
+    # 重定向到bossjy.tiankai.it.com
+    return 301 http://bossjy.tiankai.it.com$request_uri;
+}

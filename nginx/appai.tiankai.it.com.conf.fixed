@@ -1,0 +1,140 @@
+# BossJy AI API Nginx Configuration
+# Domain: appai.tiankai.it.com
+# Created: 2025-10-08
+# Updated from: gasapi.jytian.it.com
+# Backend: 127.0.0.1:18001
+
+# HTTP server
+server {
+    listen 80;
+    listen [::]:80;
+    server_name appai.tiankai.it.com;
+
+    # 重要：不要在這裡做 301 跳轉！
+    # Cloudflare 的 "Always Use HTTPS" 已經處理 HTTP → HTTPS 跳轉
+    # 如果這裡再跳轉會造成 Redirect Loop
+
+    # 直接提供服務（讓 Cloudflare 處理 HTTPS 跳轉）
+    location / {
+        proxy_pass http://127.0.0.1:18001;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
+        proxy_read_timeout 300s;
+        proxy_connect_timeout 75s;
+    }
+
+    # 條件式跳轉（可選，通常不需要）
+    # if ($http_x_forwarded_proto != "https") {
+    #     return 301 https://$host$request_uri;
+    # }
+}
+
+# HTTPS server - 用於 Cloudflare Full/Full(Strict) 模式
+server {
+    # 修正：使用新的 http2 語法
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
+
+    server_name appai.tiankai.it.com;
+
+    # SSL 憑證配置
+    # 選項 1: Let's Encrypt（自動續期）
+    #ssl_certificate /etc/letsencrypt/live/appai.tiankai.it.com/fullchain.pem;
+    #ssl_certificate_key /etc/letsencrypt/live/appai.tiankai.it.com/privkey.pem;
+
+    # 選項 2: Cloudflare Origin Certificate（15年有效期）
+    ssl_certificate /etc/ssl/cloudflare/app_ssl.pem;
+    ssl_certificate_key /etc/ssl/cloudflare/app_ssl.key;
+
+    # SSL 配置優化
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers 'ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305';
+    ssl_prefer_server_ciphers off;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 10m;
+
+    # HSTS 安全標頭（強制 HTTPS）
+    add_header Strict-Transport-Security 'max-age=31536000; includeSubDomains; preload' always;
+
+    # 額外安全標頭
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+
+    # API CORS 支持（根據需求調整）
+    add_header Access-Control-Allow-Origin "*" always;
+    add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS, PATCH" always;
+    add_header Access-Control-Allow-Headers "Authorization, Content-Type, X-Requested-With" always;
+    add_header Access-Control-Max-Age "3600" always;
+
+    # 上傳體積限制
+    client_max_body_size 50M;
+
+    # 日誌
+    access_log /var/log/nginx/appai.tiankai.it.com-access.log;
+    error_log /var/log/nginx/appai.tiankai.it.com-error.log;
+
+    # OPTIONS 預檢請求處理（CORS）
+    if ($request_method = OPTIONS) {
+        return 204;
+    }
+
+    # AI API 主要端點
+    location / {
+        proxy_pass http://127.0.0.1:18001;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 600s;  # AI 處理時間較長
+        proxy_connect_timeout 75s;
+        proxy_send_timeout 600s;
+
+        # Cloudflare 真實 IP 標頭
+        proxy_set_header CF-Connecting-IP $http_cf_connecting_ip;
+        proxy_set_header CF-Ray $http_cf_ray;
+        proxy_set_header CF-Visitor $http_cf_visitor;
+    }
+
+    # API v1 路由
+    location /api/v1/ {
+        proxy_pass http://127.0.0.1:18001;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 600s;
+    }
+
+    # WebSocket 支持（如需要）
+    location /ws/ {
+        proxy_pass http://127.0.0.1:18001;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+
+    # 健康檢查端點
+    location /health {
+        proxy_pass http://127.0.0.1:18001/health;
+        access_log off;
+    }
+
+    # API 文檔（如使用 FastAPI/Swagger）
+    location /docs {
+        proxy_pass http://127.0.0.1:18001/docs;
+    }
+
+    location /openapi.json {
+        proxy_pass http://127.0.0.1:18001/openapi.json;
+    }
+}

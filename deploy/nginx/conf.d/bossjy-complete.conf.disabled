@@ -1,0 +1,215 @@
+# BossJy-Pro 主站配置
+server {
+    listen 80;
+    listen 443 ssl http2;
+    server_name bossjy.tiankai.it.com;
+    
+    # SSL 配置 (映射本地證書)
+    ssl_certificate /etc/nginx/ssl/bossjy.tiankai.it.com.crt;
+    ssl_certificate_key /etc/nginx/ssl/bossjy.tiankai.it.com.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384;
+    ssl_prefer_server_ciphers off;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 10m;
+    
+    # 安全頭
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    
+    # 重定向 HTTP 到 HTTPS
+    if ($scheme != "https") {
+        return 301 https://$host$request_uri;
+    }
+    
+    # 健康檢查端點
+    location /health {
+        access_log off;
+        return 200 "healthy\n";
+        add_header Content-Type text/plain;
+    }
+    
+    # Vue 前端
+    location / {
+        proxy_pass http://vue-frontend:80;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        
+        # WebSocket 支持
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+    
+    # FastAPI 後端
+    location /api/ {
+        proxy_pass http://fastapi:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        
+        # API 超時設置
+        proxy_connect_timeout 60s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
+        
+        # 處理大文件上傳
+        client_max_body_size 100M;
+    }
+    
+    # Go API 過濾系統
+    location /filter/ {
+        proxy_pass http://go-api:8080/filter/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+    
+    # 靜態文件緩存
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+        proxy_pass http://vue-frontend:80;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+    
+    # API 文檔
+    location /docs {
+        proxy_pass http://fastapi:8000/docs;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+# AppAI 子站配置 - 前后端分离架构
+server {
+    listen 80;
+    listen 443 ssl http2;
+    server_name appai.tiankai.it.com;
+
+    # SSL 配置 (映射本地證書)
+    ssl_certificate /etc/nginx/ssl/appai.tiankai.it.com.crt;
+    ssl_certificate_key /etc/nginx/ssl/appai.tiankai.it.com.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384;
+    ssl_prefer_server_ciphers off;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 10m;
+
+    # 安全頭
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+    # 重定向 HTTP 到 HTTPS
+    if ($scheme != "https") {
+        return 301 https://$host$request_uri;
+    }
+
+    # 健康檢查端點
+    location /health {
+        access_log off;
+        return 200 "healthy\n";
+        add_header Content-Type text/plain;
+    }
+
+    # FastAPI 後端 API - 必须在前面匹配
+    location /api/ {
+        proxy_pass http://fastapi:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # API 超時設置
+        proxy_connect_timeout 60s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
+
+        # 處理大文件上傳
+        client_max_body_size 100M;
+    }
+
+    # API 文檔
+    location /docs {
+        proxy_pass http://fastapi:8000/docs;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Go API 過濾系統
+    location /filter/ {
+        proxy_pass http://go-api:8080/filter/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # 靜態文件緩存
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+        proxy_pass http://vue-frontend:80;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # Vue 前端 - 所有其他请求（包括 /login, /register 等前端路由）
+    location / {
+        proxy_pass http://vue-frontend:80;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # WebSocket 支持
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+    }
+}
+
+# 監控面板配置 (已禁用 - Grafana/Prometheus 服务未启动)
+# server {
+#     listen 80;
+#     listen 443 ssl http2;
+#     server_name monitor.bossjy.tiankai.it.com;
+#
+#     # SSL 配置
+#     ssl_certificate /etc/nginx/ssl/monitor.bossjy.tiankai.it.com.crt;
+#     ssl_certificate_key /etc/nginx/ssl/monitor.bossjy.tiankai.it.com.key;
+#     ssl_protocols TLSv1.2 TLSv1.3;
+#     ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384;
+#     ssl_prefer_server_ciphers off;
+#     ssl_session_cache shared:SSL:10m;
+#     ssl_session_timeout 10m;
+#
+#     # 安全頭
+#     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+#
+#     # 重定向 HTTP 到 HTTPS
+#     if ($scheme != "https") {
+#         return 301 https://$host$request_uri;
+#     }
+#
+#     # Grafana
+#     location / {
+#         proxy_pass http://grafana:3000;
+#         proxy_set_header Host $host;
+#         proxy_set_header X-Real-IP $remote_addr;
+#         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+#         proxy_set_header X-Forwarded-Proto $scheme;
+#     }
+#
+#     # Prometheus
+#     location /prometheus/ {
+#         proxy_pass http://prometheus:9090/;
+#         proxy_set_header Host $host;
+#         proxy_set_header X-Real-IP $remote_addr;
+#         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+#         proxy_set_header X-Forwarded-Proto $scheme;
+#     }
+# }

@@ -1,0 +1,439 @@
+{
+  "timestamp": "2025-10-10 04:59:38.148861",
+  "post_endpoints": {
+    "analytics_api.py": {
+      "file": "services\\fastapi\\api\\analytics_api.py",
+      "endpoints": []
+    },
+    "api_key_api.py": {
+      "file": "services\\fastapi\\api\\api_key_api.py",
+      "endpoints": [
+        {
+          "path": "/test-all",
+          "function": "test_all_keys_background",
+          "description": "后台测试所有API密钥",
+          "parameters": ""
+        },
+        {
+          "path": "/test",
+          "function": "test_all_keys_background",
+          "description": "后台测试所有API密钥",
+          "parameters": ""
+        },
+        {
+          "path": "/add",
+          "function": "test_all_keys_background",
+          "description": "后台测试所有API密钥",
+          "parameters": ""
+        },
+        {
+          "path": "/remove",
+          "function": "test_all_keys_background",
+          "description": "后台测试所有API密钥",
+          "parameters": ""
+        }
+      ]
+    },
+    "auth_api.py": {
+      "file": "services\\fastapi\\api\\auth_api.py",
+      "endpoints": [
+        {
+          "path": "/register",
+          "function": "logout_user",
+          "description": "用户登出",
+          "parameters": "response: Response"
+        },
+        {
+          "path": "/login",
+          "function": "logout_user",
+          "description": "用户登出",
+          "parameters": "response: Response"
+        },
+        {
+          "path": "/register",
+          "function": "logout_user",
+          "description": "用户登出",
+          "parameters": "response: Response"
+        },
+        {
+          "path": "/logout",
+          "function": "logout_user",
+          "description": "用户登出",
+          "parameters": "response: Response"
+        }
+      ]
+    },
+    "batch_operations_api.py": {
+      "file": "services\\fastapi\\api\\batch_operations_api.py",
+      "endpoints": []
+    },
+    "core_api.py": {
+      "file": "services\\fastapi\\api\\core_api.py",
+      "endpoints": [
+        {
+          "path": "/files/upload",
+          "function": "process_global_diaspora_filter_job",
+          "description": "處理全球僑民篩選任務",
+          "parameters": "job_id: str, db: Session"
+        },
+        {
+          "path": "/jobs/clean",
+          "function": "process_global_diaspora_filter_job",
+          "description": "處理全球僑民篩選任務",
+          "parameters": "job_id: str, db: Session"
+        },
+        {
+          "path": "/jobs/hongkong-filter",
+          "function": "process_global_diaspora_filter_job",
+          "description": "處理全球僑民篩選任務",
+          "parameters": "job_id: str, db: Session"
+        },
+        {
+          "path": "/jobs/global-diaspora-filter",
+          "function": "process_global_diaspora_filter_job",
+          "description": "處理全球僑民篩選任務",
+          "parameters": "job_id: str, db: Session"
+        },
+        {
+          "path": "/detection/stats",
+          "function": "_analyze_file",
+          "description": "分析檔案（後台任務）",
+          "parameters": "upload_id: str, file_path: str"
+        },
+        {
+          "path": "/jobs/translate",
+          "function": "_analyze_file",
+          "description": "分析檔案（後台任務）",
+          "parameters": "upload_id: str, file_path: str"
+        }
+      ]
+    },
+    "credits_api.py": {
+      "file": "services\\fastapi\\api\\credits_api.py",
+      "endpoints": [
+        {
+          "path": "/validate-tron-address",
+          "function": "create_transaction",
+          "description": "创建交易记录",
+          "parameters": "db: Session,\n    user_id: int,\n    transaction_type: str,\n    amount: int,\n    balance_after: int,\n    description: str,\n    reference_id: Optional[str] = None"
+        },
+        {
+          "path": "/check-balance",
+          "function": "create_transaction",
+          "description": "创建交易记录",
+          "parameters": "db: Session,\n    user_id: int,\n    transaction_type: str,\n    amount: int,\n    balance_after: int,\n    description: str,\n    reference_id: Optional[str] = None"
+        },
+        {
+          "path": "/usdt/create-order",
+          "function": "create_transaction",
+          "description": "创建交易记录",
+          "parameters": "db: Session,\n    user_id: int,\n    transaction_type: str,\n    amount: int,\n    balance_after: int,\n    description: str,\n    reference_id: Optional[str] = None"
+        }
+      ]
+    },
+    "data_quality_api.py": {
+      "file": "services\\fastapi\\api\\data_quality_api.py",
+      "endpoints": []
+    },
+    "enhanced_cleaning_api.py": {
+      "file": "services\\fastapi\\api\\enhanced_cleaning_api.py",
+      "endpoints": [
+        {
+          "path": "/phone/validate",
+          "function": "health_check",
+          "description": "檢查所有服務狀態",
+          "parameters": ""
+        },
+        {
+          "path": "/ethnicity/score",
+          "function": "health_check",
+          "description": "檢查所有服務狀態",
+          "parameters": ""
+        },
+        {
+          "path": "/address/normalize",
+          "function": "health_check",
+          "description": "檢查所有服務狀態",
+          "parameters": ""
+        },
+        {
+          "path": "/language/detect",
+          "function": "health_check",
+          "description": "檢查所有服務狀態",
+          "parameters": ""
+        },
+        {
+          "path": "/dedup",
+          "function": "health_check",
+          "description": "檢查所有服務狀態",
+          "parameters": ""
+        },
+        {
+          "path": "/quality/check",
+          "function": "health_check",
+          "description": "檢查所有服務狀態",
+          "parameters": ""
+        },
+        {
+          "path": "/phone/validate/async",
+          "function": "health_check",
+          "description": "檢查所有服務狀態",
+          "parameters": ""
+        },
+        {
+          "path": "/ethnicity/score/async",
+          "function": "health_check",
+          "description": "檢查所有服務狀態",
+          "parameters": ""
+        },
+        {
+          "path": "/address/normalize/async",
+          "function": "health_check",
+          "description": "檢查所有服務狀態",
+          "parameters": ""
+        },
+        {
+          "path": "/language/detect/async",
+          "function": "health_check",
+          "description": "檢查所有服務狀態",
+          "parameters": ""
+        },
+        {
+          "path": "/dedup/async",
+          "function": "health_check",
+          "description": "檢查所有服務狀態",
+          "parameters": ""
+        }
+      ]
+    },
+    "ingest_pipeline.py": {
+      "file": "services\\fastapi\\api\\ingest_pipeline.py",
+      "endpoints": []
+    },
+    "intelligent_preprocessing_api.py": {
+      "file": "services\\fastapi\\api\\intelligent_preprocessing_api.py",
+      "endpoints": []
+    },
+    "notification_api.py": {
+      "file": "services\\fastapi\\api\\notification_api.py",
+      "endpoints": [
+        {
+          "path": "/",
+          "function": "create_system_notification",
+          "description": "创建系统通知\n    \n    Args:\n        db: 数据库会话\n        user_id: 用户ID\n        title: 通知标题\n        content: 通知内容\n        notification_type: 通知类型",
+          "parameters": "db: Session,\n    user_id: int,\n    title: str,\n    content: str,\n    notification_type: str = 'system'"
+        },
+        {
+          "path": "/{notification_id}/read",
+          "function": "create_system_notification",
+          "description": "创建系统通知\n    \n    Args:\n        db: 数据库会话\n        user_id: 用户ID\n        title: 通知标题\n        content: 通知内容\n        notification_type: 通知类型",
+          "parameters": "db: Session,\n    user_id: int,\n    title: str,\n    content: str,\n    notification_type: str = 'system'"
+        },
+        {
+          "path": "/read-all",
+          "function": "create_system_notification",
+          "description": "创建系统通知\n    \n    Args:\n        db: 数据库会话\n        user_id: 用户ID\n        title: 通知标题\n        content: 通知内容\n        notification_type: 通知类型",
+          "parameters": "db: Session,\n    user_id: int,\n    title: str,\n    content: str,\n    notification_type: str = 'system'"
+        }
+      ]
+    },
+    "phone_integration.py": {
+      "file": "services\\fastapi\\api\\phone_integration.py",
+      "endpoints": [
+        {
+          "path": "/validate",
+          "function": "get_country_info",
+          "description": "获取国家/地区信息",
+          "parameters": "country_code: str"
+        },
+        {
+          "path": "/batch-validate",
+          "function": "get_country_info",
+          "description": "获取国家/地区信息",
+          "parameters": "country_code: str"
+        }
+      ]
+    },
+    "phone_validation_api.py": {
+      "file": "services\\fastapi\\api\\phone_validation_api.py",
+      "endpoints": [
+        {
+          "path": "/validate",
+          "function": "phone_health_check",
+          "description": "電話驗證服務健康檢查\n    \n    Returns:\n        Dict: 健康狀態",
+          "parameters": ""
+        },
+        {
+          "path": "/validate/batch",
+          "function": "phone_health_check",
+          "description": "電話驗證服務健康檢查\n    \n    Returns:\n        Dict: 健康狀態",
+          "parameters": ""
+        }
+      ]
+    },
+    "progress_api.py": {
+      "file": "services\\fastapi\\api\\progress_api.py",
+      "endpoints": [
+        {
+          "path": "/create",
+          "function": "websocket_endpoint",
+          "description": "WebSocket端点，用于实时进度更新",
+          "parameters": "websocket: WebSocket, user_id: str"
+        },
+        {
+          "path": "/complete/{task_id}",
+          "function": "websocket_endpoint",
+          "description": "WebSocket端点，用于实时进度更新",
+          "parameters": "websocket: WebSocket, user_id: str"
+        },
+        {
+          "path": "/fail/{task_id}",
+          "function": "websocket_endpoint",
+          "description": "WebSocket端点，用于实时进度更新",
+          "parameters": "websocket: WebSocket, user_id: str"
+        }
+      ]
+    },
+    "recommendation_api.py": {
+      "file": "services\\fastapi\\api\\recommendation_api.py",
+      "endpoints": []
+    },
+    "search_api.py": {
+      "file": "services\\fastapi\\api\\search_api.py",
+      "endpoints": []
+    },
+    "security_enhanced.py": {
+      "file": "services\\fastapi\\api\\security_enhanced.py",
+      "endpoints": [
+        {
+          "path": "/register",
+          "function": "register",
+          "description": "用户注册",
+          "parameters": "user: UserCreate"
+        },
+        {
+          "path": "/login",
+          "function": "login",
+          "description": "用户登录",
+          "parameters": "credentials: UserLogin"
+        }
+      ]
+    },
+    "smart_recommendations_api.py": {
+      "file": "services\\fastapi\\api\\smart_recommendations_api.py",
+      "endpoints": []
+    },
+    "system_dispatch.py": {
+      "file": "services\\fastapi\\api\\system_dispatch.py",
+      "endpoints": []
+    },
+    "task_management.py": {
+      "file": "services\\fastapi\\api\\task_management.py",
+      "endpoints": []
+    },
+    "telegram_bot.py": {
+      "file": "services\\fastapi\\api\\telegram_bot.py",
+      "endpoints": []
+    },
+    "tenant_management.py": {
+      "file": "services\\fastapi\\api\\tenant_management.py",
+      "endpoints": []
+    },
+    "twofa_api.py": {
+      "file": "services\\fastapi\\api\\twofa_api.py",
+      "endpoints": []
+    },
+    "unified_dispatch.py": {
+      "file": "services\\fastapi\\api\\unified_dispatch.py",
+      "endpoints": []
+    },
+    "upload_api.py": {
+      "file": "services\\fastapi\\api\\upload_api.py",
+      "endpoints": [
+        {
+          "path": "/batch",
+          "function": "process_file_background",
+          "description": "后台处理文件（支持WebSocket进度推送）",
+          "parameters": "file_id: str, options: UploadOptions, user_id: int"
+        },
+        {
+          "path": "/process",
+          "function": "process_file_background",
+          "description": "后台处理文件（支持WebSocket进度推送）",
+          "parameters": "file_id: str, options: UploadOptions, user_id: int"
+        }
+      ]
+    },
+    "usdt_payments.py": {
+      "file": "services\\fastapi\\api\\usdt_payments.py",
+      "endpoints": []
+    },
+    "websocket_api.py": {
+      "file": "services\\fastapi\\api\\websocket_api.py",
+      "endpoints": []
+    },
+    "workflow_api.py": {
+      "file": "services\\fastapi\\api\\workflow_api.py",
+      "endpoints": [
+        {
+          "path": "/create",
+          "function": "get_workflow_templates",
+          "description": "获取预定义工作流模板",
+          "parameters": ""
+        },
+        {
+          "path": "/{workflow_id}/execute",
+          "function": "get_workflow_templates",
+          "description": "获取预定义工作流模板",
+          "parameters": ""
+        }
+      ]
+    }
+  },
+  "form_endpoints": {},
+  "analysis": {
+    "backend_endpoints": [
+      "/address/normalize/async",
+      "/register",
+      "/batch-validate",
+      "/read-all",
+      "/ethnicity/score/async",
+      "/jobs/translate",
+      "/dedup/async",
+      "/validate-tron-address",
+      "/phone/validate/async",
+      "/process",
+      "/files/upload",
+      "/jobs/global-diaspora-filter",
+      "/remove",
+      "/usdt/create-order",
+      "/test",
+      "/check-balance",
+      "/batch",
+      "/quality/check",
+      "/logout",
+      "/jobs/clean",
+      "/fail/{task_id}",
+      "/{notification_id}/read",
+      "/login",
+      "/ethnicity/score",
+      "/detection/stats",
+      "/add",
+      "/language/detect/async",
+      "/validate",
+      "/test-all",
+      "/phone/validate",
+      "/dedup",
+      "/language/detect",
+      "/address/normalize",
+      "/{workflow_id}/execute",
+      "/create",
+      "/jobs/hongkong-filter",
+      "/",
+      "/validate/batch",
+      "/complete/{task_id}"
+    ],
+    "frontend_requests": [],
+    "missing_endpoints": []
+  }
+}

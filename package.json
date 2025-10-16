@@ -1,0 +1,13 @@
+{
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.46.0",
+    "@typescript-eslint/parser": "^8.46.0",
+    "depcheck": "^1.4.7",
+    "eslint": "^9.37.0",
+    "eslint-plugin-unused-imports": "^4.2.0",
+    "jscpd": "^4.0.5",
+    "knip": "^5.64.2",
+    "madge": "^8.0.0",
+    "ts-unused-exports": "^11.0.1"
+  }
+}

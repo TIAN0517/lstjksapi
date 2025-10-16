@@ -1,0 +1,327 @@
+BossJy-Pro POST端点深层检查报告
+==================================================
+生成时间: 2025-10-10 04:59:38.148861
+
+[POST] POST端点列表
+------------------------------
+
+[FILE] analytics_api.py:
+
+[FILE] api_key_api.py:
+  - POST /test-all
+    函数: test_all_keys_background
+    描述: 后台测试所有API密钥
+
+  - POST /test
+    函数: test_all_keys_background
+    描述: 后台测试所有API密钥
+
+  - POST /add
+    函数: test_all_keys_background
+    描述: 后台测试所有API密钥
+
+  - POST /remove
+    函数: test_all_keys_background
+    描述: 后台测试所有API密钥
+
+
+[FILE] auth_api.py:
+  - POST /register
+    函数: logout_user
+    描述: 用户登出
+    参数: response: Response
+
+  - POST /login
+    函数: logout_user
+    描述: 用户登出
+    参数: response: Response
+
+  - POST /register
+    函数: logout_user
+    描述: 用户登出
+    参数: response: Response
+
+  - POST /logout
+    函数: logout_user
+    描述: 用户登出
+    参数: response: Response
+
+
+[FILE] batch_operations_api.py:
+
+[FILE] core_api.py:
+  - POST /files/upload
+    函数: process_global_diaspora_filter_job
+    描述: 處理全球僑民篩選任務
+    参数: job_id: str, db: Session
+
+  - POST /jobs/clean
+    函数: process_global_diaspora_filter_job
+    描述: 處理全球僑民篩選任務
+    参数: job_id: str, db: Session
+
+  - POST /jobs/hongkong-filter
+    函数: process_global_diaspora_filter_job
+    描述: 處理全球僑民篩選任務
+    参数: job_id: str, db: Session
+
+  - POST /jobs/global-diaspora-filter
+    函数: process_global_diaspora_filter_job
+    描述: 處理全球僑民篩選任務
+    参数: job_id: str, db: Session
+
+  - POST /detection/stats
+    函数: _analyze_file
+    描述: 分析檔案（後台任務）
+    参数: upload_id: str, file_path: str
+
+  - POST /jobs/translate
+    函数: _analyze_file
+    描述: 分析檔案（後台任務）
+    参数: upload_id: str, file_path: str
+
+
+[FILE] credits_api.py:
+  - POST /validate-tron-address
+    函数: create_transaction
+    描述: 创建交易记录
+    参数: db: Session,
+    user_id: int,
+    transaction_type: str,
+    amount: int,
+    balance_after: int,
+    description: str,
+    reference_id: Optional[str] = None
+
+  - POST /check-balance
+    函数: create_transaction
+    描述: 创建交易记录
+    参数: db: Session,
+    user_id: int,
+    transaction_type: str,
+    amount: int,
+    balance_after: int,
+    description: str,
+    reference_id: Optional[str] = None
+
+  - POST /usdt/create-order
+    函数: create_transaction
+    描述: 创建交易记录
+    参数: db: Session,
+    user_id: int,
+    transaction_type: str,
+    amount: int,
+    balance_after: int,
+    description: str,
+    reference_id: Optional[str] = None
+
+
+[FILE] data_quality_api.py:
+
+[FILE] enhanced_cleaning_api.py:
+  - POST /phone/validate
+    函数: health_check
+    描述: 檢查所有服務狀態
+
+  - POST /ethnicity/score
+    函数: health_check
+    描述: 檢查所有服務狀態
+
+  - POST /address/normalize
+    函数: health_check
+    描述: 檢查所有服務狀態
+
+  - POST /language/detect
+    函数: health_check
+    描述: 檢查所有服務狀態
+
+  - POST /dedup
+    函数: health_check
+    描述: 檢查所有服務狀態
+
+  - POST /quality/check
+    函数: health_check
+    描述: 檢查所有服務狀態
+
+  - POST /phone/validate/async
+    函数: health_check
+    描述: 檢查所有服務狀態
+
+  - POST /ethnicity/score/async
+    函数: health_check
+    描述: 檢查所有服務狀態
+
+  - POST /address/normalize/async
+    函数: health_check
+    描述: 檢查所有服務狀態
+
+  - POST /language/detect/async
+    函数: health_check
+    描述: 檢查所有服務狀態
+
+  - POST /dedup/async
+    函数: health_check
+    描述: 檢查所有服務狀態
+
+
+[FILE] ingest_pipeline.py:
+
+[FILE] intelligent_preprocessing_api.py:
+
+[FILE] notification_api.py:
+  - POST /
+    函数: create_system_notification
+    描述: 创建系统通知
+    
+    Args:
+        db: 数据库会话
+        user_id: 用户ID
+        title: 通知标题
+        content: 通知内容
+        notification_type: 通知类型
+    参数: db: Session,
+    user_id: int,
+    title: str,
+    content: str,
+    notification_type: str = 'system'
+
+  - POST /{notification_id}/read
+    函数: create_system_notification
+    描述: 创建系统通知
+    
+    Args:
+        db: 数据库会话
+        user_id: 用户ID
+        title: 通知标题
+        content: 通知内容
+        notification_type: 通知类型
+    参数: db: Session,
+    user_id: int,
+    title: str,
+    content: str,
+    notification_type: str = 'system'
+
+  - POST /read-all
+    函数: create_system_notification
+    描述: 创建系统通知
+    
+    Args:
+        db: 数据库会话
+        user_id: 用户ID
+        title: 通知标题
+        content: 通知内容
+        notification_type: 通知类型
+    参数: db: Session,
+    user_id: int,
+    title: str,
+    content: str,
+    notification_type: str = 'system'
+
+
+[FILE] phone_integration.py:
+  - POST /validate
+    函数: get_country_info
+    描述: 获取国家/地区信息
+    参数: country_code: str
+
+  - POST /batch-validate
+    函数: get_country_info
+    描述: 获取国家/地区信息
+    参数: country_code: str
+
+
+[FILE] phone_validation_api.py:
+  - POST /validate
+    函数: phone_health_check
+    描述: 電話驗證服務健康檢查
+    
+    Returns:
+        Dict: 健康狀態
+
+  - POST /validate/batch
+    函数: phone_health_check
+    描述: 電話驗證服務健康檢查
+    
+    Returns:
+        Dict: 健康狀態
+
+
+[FILE] progress_api.py:
+  - POST /create
+    函数: websocket_endpoint
+    描述: WebSocket端点，用于实时进度更新
+    参数: websocket: WebSocket, user_id: str
+
+  - POST /complete/{task_id}
+    函数: websocket_endpoint
+    描述: WebSocket端点，用于实时进度更新
+    参数: websocket: WebSocket, user_id: str
+
+  - POST /fail/{task_id}
+    函数: websocket_endpoint
+    描述: WebSocket端点，用于实时进度更新
+    参数: websocket: WebSocket, user_id: str
+
+
+[FILE] recommendation_api.py:
+
+[FILE] search_api.py:
+
+[FILE] security_enhanced.py:
+  - POST /register
+    函数: register
+    描述: 用户注册
+    参数: user: UserCreate
+
+  - POST /login
+    函数: login
+    描述: 用户登录
+    参数: credentials: UserLogin
+
+
+[FILE] smart_recommendations_api.py:
+
+[FILE] system_dispatch.py:
+
+[FILE] task_management.py:
+
+[FILE] telegram_bot.py:
+
+[FILE] tenant_management.py:
+
+[FILE] twofa_api.py:
+
+[FILE] unified_dispatch.py:
+
+[FILE] upload_api.py:
+  - POST /batch
+    函数: process_file_background
+    描述: 后台处理文件（支持WebSocket进度推送）
+    参数: file_id: str, options: UploadOptions, user_id: int
+
+  - POST /process
+    函数: process_file_background
+    描述: 后台处理文件（支持WebSocket进度推送）
+    参数: file_id: str, options: UploadOptions, user_id: int
+
+
+[FILE] usdt_payments.py:
+
+[FILE] websocket_api.py:
+
+[FILE] workflow_api.py:
+  - POST /create
+    函数: get_workflow_templates
+    描述: 获取预定义工作流模板
+
+  - POST /{workflow_id}/execute
+    函数: get_workflow_templates
+    描述: 获取预定义工作流模板
+
+
+[FRONTEND] 前端表单提交
+------------------------------
+
+[ANALYSIS] 缺失端点分析
+------------------------------
+[SUCCESS] 没有发现缺失端点

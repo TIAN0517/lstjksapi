@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 | BossJy-Cn</title>
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0B1020 0%, #1a1f3a 100%);
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(124, 77, 255, 0.2);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #7C4DFF 0%, #00E5FF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+    <script src="/static/js/validators.js?v=20251007-1" type="module"></script>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div class="glass-effect rounded-2xl p-8 w-full max-w-md">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold gradient-text mb-2">BossJy-Cn</h1>
+            <p class="text-gray-400">华人数据智能筛选系统</p>
+        </div>
+
+        <form id="loginForm" class="space-y-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">用户名或邮箱</label>
+                <input type="text" id="username" required
+                    class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 text-white">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-2">密码</label>
+                <input type="password" id="password" required minlength="8"
+                    class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 text-white">
+            </div>
+            
+            <!-- Password Validator (shared rule/message) -->
+            <script type="module">
+            import { validatePassword } from '/static/js/validators.js?v=20251007-1';
+
+            (function () {
+              // 登入：不阻挡，但显示同一提示（避免两入口规则不一致的体感）
+              var login = document.querySelector('form#login, form[action="/api/auth/login"]');
+              if (login) {
+                var p = login.querySelector('input[type="password"]');
+                if (p) {
+                  var tip = document.createElement('div');
+                  tip.className = 'text-gray-400 text-xs mt-1';
+                  tip.textContent = "提示：密码需至少8码，且必须包含：1个大写、1个小写、1个数字、1个特殊字元；不可连续3个相同字元。";
+                  p.after(tip);
+                }
+              }
+            })();
+            </script>
+
+            <div class="flex items-center justify-between text-sm">
+                <label class="flex items-center text-gray-400">
+                    <input type="checkbox" id="remember" class="mr-2">
+                    记住我
+                </label>
+                <a href="#" class="text-purple-400 hover:text-purple-300">忘记密码？</a>
+            </div>
+
+            <button type="submit"
+                class="w-full py-3 bg-gradient-to-r from-purple-500 to-cyan-500 text-white rounded-lg font-medium hover:opacity-90 transition-opacity">
+                登录
+            </button>
+
+            <div class="text-center text-sm text-gray-400">
+                还没有账户？ <a href="/register" class="text-purple-400 hover:text-purple-300">立即注册</a>
+            </div>
+        </form>
+
+        <div id="errorMsg" class="mt-4 p-3 bg-red-500/10 border border-red-500 rounded-lg text-red-400 text-sm hidden"></div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('errorMsg');
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    if (data.access_token && data.refresh_token) {
+                        localStorage.setItem('access_token', data.access_token);
+                        localStorage.setItem('refresh_token', data.refresh_token);
+                    }
+                    // 檢查URL中是否有next參數，如果有則跳轉到該頁面，否則跳轉到dashboard
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const next = urlParams.get('next');
+                    
+                    if (next) {
+                        // 確保next是相對路徑，避免安全問題
+                        if (next.startsWith('/') && !next.startsWith('//')) {
+                            window.location.href = next;
+                        } else {
+                            window.location.href = '/dashboard';
+                        }
+                    } else {
+                        window.location.href = '/dashboard';
+                    }
+                } else {
+                    errorMsg.textContent = data.message || '登录失败，请检查用户名和密码';
+                    errorMsg.classList.remove('hidden');
+                }
+            } catch (error) {
+                errorMsg.textContent = '登录失败：' + error.message;
+                errorMsg.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

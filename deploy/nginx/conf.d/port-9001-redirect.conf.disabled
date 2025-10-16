@@ -1,0 +1,8 @@
+# 9001端口重定向到bossjy.tiankai.it.com
+server {
+    listen 9001;
+    server_name _;
+    
+    # 重定向所有9001端口请求到bossjy.tiankai.it.com
+    return 301 https://bossjy.tiankai.it.com$request_uri;
+}

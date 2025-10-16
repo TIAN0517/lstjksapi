@@ -1,0 +1,58 @@
+{
+  "dashboard": {
+    "title": "BossJy System Overview",
+    "tags": ["bossjy", "overview"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "title": "Services Health",
+        "targets": [{
+          "expr": "up{job=~\"fastapi|go-api|chat|jyt|admin\"}"
+        }],
+        "type": "stat",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+      },
+      {
+        "title": "Request Rate (req/s)",
+        "targets": [{
+          "expr": "sum(rate(http_requests_total[5m])) by (service)"
+        }],
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+      },
+      {
+        "title": "Error Rate (%)",
+        "targets": [{
+          "expr": "sum(rate(http_requests_total{status=~\"5..\"}[5m])) by (service) / sum(rate(http_requests_total[5m])) by (service) * 100"
+        }],
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "title": "Response Time P95 (s)",
+        "targets": [{
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, service))"
+        }],
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      },
+      {
+        "title": "CPU Usage (%)",
+        "targets": [{
+          "expr": "rate(container_cpu_usage_seconds_total[5m]) * 100"
+        }],
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+      },
+      {
+        "title": "Memory Usage (MB)",
+        "targets": [{
+          "expr": "container_memory_usage_bytes / 1024 / 1024"
+        }],
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+      }
+    ],
+    "refresh": "30s"
+  }
+}

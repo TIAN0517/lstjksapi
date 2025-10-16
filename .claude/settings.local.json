@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python:*)",
+      "Bash(pip install:*)",
+      "Bash(chcp:*)",
+      "Bash(docker logs:*)",
+      "Bash(for:*)",
+      "Bash(grep:*)",
+      "Bash(done)",
+      "Bash(crontab:*)",
+      "Bash(cloudflared tunnel:*)",
+      "Bash(echo:*)",
+      "Bash(awk:*)",
+      "Bash(git diff:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git rev-list:*)",
+      "Bash(git push:*)",
+      "Bash(tee:*)",
+      "Bash(python3:*)",
+      "Bash(git reset:*)",
+      "Bash(curl:*)",
+      "Bash(cat:*)",
+      "Bash(docker ps:*)",
+      "Bash(/mnt/d/BossJy-Cn/BossJy-Cn/check_services.sh:*)",
+      "Bash(./stop_all_bots.sh:*)",
+      "Bash(pkill:*)",
+      "Bash(./start_all_bots.sh:*)",
+      "Bash(docker exec:*)",
+      "Bash(sqlite3:*)",
+      "Bash(kill:*)",
+      "Bash(chmod:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

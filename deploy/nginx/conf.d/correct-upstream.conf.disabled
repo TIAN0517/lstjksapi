@@ -1,0 +1,155 @@
+# 正确的 upstream 配置 - Docker环境
+# 在Docker中访问宿主机端口，必须使用 host.docker.internal
+
+upstream appai_upstream  {
+    server host.docker.internal:18001;
+    keepalive 64;
+}
+
+upstream bossjy_upstream {
+    server host.docker.internal:9001;
+    keepalive 64;
+}
+
+upstream chat88_upstream {
+    server host.docker.internal:9002;
+    keepalive 64;
+}
+
+upstream jyt2_upstream   {
+    server host.docker.internal:9003;
+    keepalive 64;
+}
+
+upstream admin2_upstream {
+    server host.docker.internal:9888;
+    keepalive 64;
+}
+
+# appai.tiankai.it.com - 使用upstream
+server {
+    listen 80;
+    listen 443 ssl http2;
+    server_name appai.tiankai.it.com;
+
+    ssl_certificate /etc/nginx/ssl/appai.tiankai.it.com.crt;
+    ssl_certificate_key /etc/nginx/ssl/appai.tiankai.it.com.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers off;
+
+    # 健康检查
+    location /health {
+        access_log off;
+        return 200 "healthy\n";
+        add_header Content-Type text/plain;
+    }
+
+    # 后端API（端口18001包含前端和API）
+    location / {
+        proxy_pass http://appai_upstream;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+    }
+}
+
+# bossjy.tiankai.it.com - 使用upstream
+server {
+    listen 80;
+    listen 443 ssl http2;
+    server_name bossjy.tiankai.it.com;
+
+    ssl_certificate /etc/nginx/ssl/bossjy.tiankai.it.com.crt;
+    ssl_certificate_key /etc/nginx/ssl/bossjy.tiankai.it.com.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers off;
+
+    location / {
+        proxy_pass http://bossjy_upstream;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+    }
+}
+
+# chat88.tiankai.it.com - 使用upstream
+server {
+    listen 80;
+    listen 443 ssl http2;
+    server_name chat88.tiankai.it.com;
+
+    ssl_certificate /etc/nginx/ssl/chat88.tiankai.it.com.crt;
+    ssl_certificate_key /etc/nginx/ssl/chat88.tiankai.it.com.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers off;
+
+    location / {
+        proxy_pass http://chat88_upstream;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+    }
+}
+
+# jyt2.tiankai.it.com - 使用upstream
+server {
+    listen 80;
+    listen 443 ssl http2;
+    server_name jyt2.tiankai.it.com;
+
+    ssl_certificate /etc/nginx/ssl/jyt2.tiankai.it.com.crt;
+    ssl_certificate_key /etc/nginx/ssl/jyt2.tiankai.it.com.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers off;
+
+    location / {
+        proxy_pass http://jyt2_upstream;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+    }
+}
+
+# admin2.tiankai.it.com - 使用upstream
+server {
+    listen 80;
+    listen 443 ssl http2;
+    server_name admin2.tiankai.it.com;
+
+    ssl_certificate /etc/nginx/ssl/admin2.tiankai.it.com.crt;
+    ssl_certificate_key /etc/nginx/ssl/admin2.tiankai.it.com.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers off;
+
+    location / {
+        proxy_pass http://admin2_upstream;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+    }
+}

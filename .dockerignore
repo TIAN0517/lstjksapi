@@ -1,0 +1,196 @@
+# Git
+.git
+.gitignore
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+coverage.xml
+*.cover
+.hypothesis/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# celery beat schedule file
+celerybeat-schedule
+
+# SageMath parsed files
+*.sage.py
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Database
+*.db
+*.sqlite3
+backups/
+*.dump
+*.sql.gz
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Uploads and processed data
+data/uploads/
+data/processed/
+data/exports/
+*.csv
+*.xlsx
+*.xls
+*.json
+*.xml
+
+# SSL certificates
+*.pem
+*.key
+*.crt
+*.csr
+ssl/
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+docker-compose*.yaml
+.dockerignore
+
+# Legacy and scripts
+scripts/legacy/
+scripts/clean_secrets.py
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# Documentation (keep README)
+README*.md
+docs/
+*.md
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Cache
+.cache/
+*.cache
+
+# Local configuration
+config.local.*
+settings.local.*
+
+# Test files
+test_*
+*_test.py
+tests/
+
+# Build artifacts
+build/
+dist/
+
+# Package files
+*.egg
+*.egg-info
+*.whl
+
+# Environment specific
+.env.development
+.env.production
+.env.staging
+
+# Secrets
+secrets/
+credentials/
+*.p12
+*.pfx
+
+# Monitoring and metrics
+.monitoring/
+.grafana/
+.prometheus/

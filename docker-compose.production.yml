@@ -1,0 +1,291 @@
+version: '3.8'
+
+services:
+  # PostgreSQL 数据库
+  postgres:
+    image: postgres:15-alpine
+    container_name: bossjy-postgres-prod
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: bossjy_huaqiao
+      POSTGRES_USER: jytian
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ji394su3!!}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./deploy/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./deploy/db_optimization.sql:/docker-entrypoint-initdb.d/optimization.sql:ro
+    ports:
+      - "15432:5432"
+    networks:
+      - bossjy-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jytian -d bossjy_huaqiao"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 1G
+          cpus: '0.5'
+
+  # Redis 缓存
+  redis:
+    image: redis:7-alpine
+    container_name: bossjy-redis-prod
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-ji394su3!!}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "16379:6379"
+    networks:
+      - bossjy-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+
+  # FastAPI 后端
+  fastapi:
+    build:
+      context: .
+      dockerfile: services/fastapi/Dockerfile.production
+    container_name: bossjy-fastapi-prod
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgresql://jytian:${POSTGRES_PASSWORD:-ji394su3!!}@postgres:5432/bossjy_huaqiao
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-ji394su3!!}@redis:6379/0
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-your-secret-key-change-this}
+      - ENVIRONMENT=production
+      - LOG_LEVEL=INFO
+    volumes:
+      - fastapi_logs:/app/logs
+      - fastapi_data:/app/data
+    ports:
+      - "18001:8000"
+    networks:
+      - bossjy-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+
+  # Go API 服务
+  go-api:
+    build:
+      context: .
+      dockerfile: services/go-api/Dockerfile
+    container_name: bossjy-go-api-prod
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgresql://jytian:${POSTGRES_PASSWORD:-ji394su3!!}@postgres:5432/bossjy_huaqiao
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-ji394su3!!}@redis:6379/1
+      - PORT=8080
+    ports:
+      - "18080:8080"
+    networks:
+      - bossjy-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+
+  # Vue.js 前端
+  vue-frontend:
+    build:
+      context: .
+      dockerfile: services/vue-frontend/Dockerfile.production
+    container_name: bossjy-frontend-prod
+    restart: unless-stopped
+    ports:
+      - "9001:80"
+    networks:
+      - bossjy-network
+    depends_on:
+      - fastapi
+      - go-api
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+
+  # Prometheus 监控
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: bossjy-prometheus-prod
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    networks:
+      - bossjy-network
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+
+  # Grafana 可视化
+  grafana:
+    image: grafana/grafana:latest
+    container_name: bossjy-grafana-prod
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-ji394su3!!}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SECURITY_DISABLE_GRAVATAR=true
+      - GF_ANALYTICS_REPORTING_ENABLED=false
+      - GF_ANALYTICS_CHECK_FOR_UPDATES=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    networks:
+      - bossjy-network
+    depends_on:
+      - prometheus
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+
+  # Nginx 反向代理
+  nginx:
+    image: nginx:alpine
+    container_name: bossjy-nginx-prod
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./deploy/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./deploy/nginx/ssl:/etc/nginx/ssl:ro
+      - nginx_logs:/var/log/nginx
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - bossjy-network
+    depends_on:
+      - fastapi
+      - go-api
+      - vue-frontend
+    healthcheck:
+      test: ["CMD", "sh", "-c", "nc -z 127.0.0.1 80 && nc -z 127.0.0.1 443"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+
+  # 日志收集器
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.8.0
+    container_name: bossjy-filebeat-prod
+    restart: unless-stopped
+    user: root
+    volumes:
+      - ./monitoring/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - fastapi_logs:/var/log/fastapi:ro
+      - nginx_logs:/var/log/nginx:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - bossjy-network
+    depends_on:
+      - fastapi
+      - nginx
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  fastapi_logs:
+    driver: local
+  fastapi_data:
+    driver: local
+  nginx_logs:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  bossjy-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

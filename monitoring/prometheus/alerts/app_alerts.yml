@@ -1,0 +1,145 @@
+# BossJy应用告警规则
+groups:
+  - name: application_alerts
+    interval: 30s
+    rules:
+      # 服务可用性告警
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+          category: availability
+        annotations:
+          summary: "Service {{ $labels.job }} is down"
+          description: "{{ $labels.job }} on {{ $labels.instance }} has been down for more than 1 minute"
+
+      # 高错误率告警
+      - alert: HighErrorRate
+        expr: |
+          (
+            sum(rate(http_requests_total{status=~"5.."}[5m])) by (service)
+            /
+            sum(rate(http_requests_total[5m])) by (service)
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          category: errors
+        annotations:
+          summary: "High error rate on {{ $labels.service }}"
+          description: "{{ $labels.service }} has error rate above 5% (current: {{ $value | humanizePercentage }})"
+
+      # 高延迟告警
+      - alert: HighLatency
+        expr: |
+          histogram_quantile(0.95,
+            sum(rate(http_request_duration_seconds_bucket[5m])) by (le, service)
+          ) > 1
+        for: 10m
+        labels:
+          severity: warning
+          category: performance
+        annotations:
+          summary: "High latency on {{ $labels.service }}"
+          description: "{{ $labels.service }} 95th percentile latency is above 1s (current: {{ $value }}s)"
+
+      # 内存使用告警
+      - alert: HighMemoryUsage
+        expr: |
+          (
+            container_memory_usage_bytes / container_spec_memory_limit_bytes * 100
+          ) > 90
+        for: 5m
+        labels:
+          severity: warning
+          category: resources
+        annotations:
+          summary: "High memory usage on {{ $labels.name }}"
+          description: "Container {{ $labels.name }} memory usage is above 90% (current: {{ $value }}%)"
+
+      # CPU使用告警
+      - alert: HighCPUUsage
+        expr: |
+          (
+            rate(container_cpu_usage_seconds_total[5m]) * 100
+          ) > 80
+        for: 10m
+        labels:
+          severity: warning
+          category: resources
+        annotations:
+          summary: "High CPU usage on {{ $labels.name }}"
+          description: "Container {{ $labels.name }} CPU usage is above 80% (current: {{ $value }}%)"
+
+      # 磁盘空间告警
+      - alert: DiskSpaceLow
+        expr: |
+          (
+            node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"} * 100
+          ) < 10
+        for: 5m
+        labels:
+          severity: critical
+          category: resources
+        annotations:
+          summary: "Low disk space on {{ $labels.instance }}"
+          description: "Disk space is below 10% (current: {{ $value }}%)"
+
+      # 数据库连接池告警
+      - alert: DatabaseConnectionPoolExhausted
+        expr: |
+          (
+            pg_stat_database_numbackends / pg_settings_max_connections * 100
+          ) > 80
+        for: 5m
+        labels:
+          severity: warning
+          category: database
+        annotations:
+          summary: "Database connection pool nearly exhausted"
+          description: "PostgreSQL connection usage is above 80% (current: {{ $value }}%)"
+
+      # Redis内存告警
+      - alert: RedisMemoryHigh
+        expr: |
+          (
+            redis_memory_used_bytes / redis_memory_max_bytes * 100
+          ) > 90
+        for: 5m
+        labels:
+          severity: warning
+          category: cache
+        annotations:
+          summary: "Redis memory usage is high"
+          description: "Redis memory usage is above 90% (current: {{ $value }}%)"
+
+      # 请求速率异常
+      - alert: UnusualRequestRate
+        expr: |
+          abs(
+            rate(http_requests_total[5m])
+            -
+            avg_over_time(rate(http_requests_total[5m])[1h:5m])
+          ) / avg_over_time(rate(http_requests_total[5m])[1h:5m]) > 2
+        for: 10m
+        labels:
+          severity: info
+          category: traffic
+        annotations:
+          summary: "Unusual request rate on {{ $labels.service }}"
+          description: "Request rate deviates significantly from normal patterns"
+
+      # SSL证书过期告警
+      - alert: SSLCertificateExpiring
+        expr: |
+          (
+            ssl_cert_not_after - time()
+          ) / 86400 < 30
+        for: 1h
+        labels:
+          severity: warning
+          category: security
+        annotations:
+          summary: "SSL certificate expiring soon"
+          description: "SSL certificate for {{ $labels.domain }} expires in {{ $value }} days"
